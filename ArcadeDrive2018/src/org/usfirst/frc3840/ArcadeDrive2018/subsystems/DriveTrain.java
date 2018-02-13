@@ -3,6 +3,9 @@ package org.usfirst.frc3840.ArcadeDrive2018.subsystems;
 
 import org.usfirst.frc3840.ArcadeDrive2018.RobotMap;
 import org.usfirst.frc3840.ArcadeDrive2018.commands.DriveRobot;
+
+import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
+
 import edu.wpi.first.wpilibj.command.Subsystem;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
@@ -15,11 +18,12 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 public class DriveTrain extends Subsystem {
 
     private final DifferentialDrive arcadeTrain = RobotMap.driveTrainArcadeTrain;
+    private final WPI_TalonSRX leftMaster = RobotMap.driveTrainTalonSRX1;
+    private final WPI_TalonSRX rightMaster = RobotMap.driveTrainTalonSRX3;
 
     @Override
     public void initDefaultCommand() {
        
-        // Set the default command for a subsystem here.
     	// Set the default command for a subsystem here.
          setDefaultCommand(new DriveRobot());
     }
@@ -35,7 +39,7 @@ public class DriveTrain extends Subsystem {
     
   //Arcade Drive from Drive via XboxController input   
     public void arcadeDrive(XboxController joystick1) {
-    	double joyThreshold = 0.15;  //default threshold value from xBox Controller
+    	double joyThreshold = 0.25;  //default threshold value from xBox Controller
     	double stickX = joystick1.getX();       
     	double stickY = joystick1.getY();
     	//display on dashboards
@@ -49,9 +53,11 @@ public class DriveTrain extends Subsystem {
     
    //Stop motion for acrcade drive
     public void StopMotion() {
-    	
     	arcadeTrain.stopMotor();
     }
     
+    private void EncoderValues() {
+    	
+    }
 }
 

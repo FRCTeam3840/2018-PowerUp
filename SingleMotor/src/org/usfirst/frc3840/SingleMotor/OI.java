@@ -41,8 +41,8 @@ public class OI {
 	
 	
     public OI() {
-        
-    	actuatorsController = new XboxController(1);
+        //uSB 0 INPUT mapping
+    	actuatorsController = new XboxController(0);
         		
     }
     

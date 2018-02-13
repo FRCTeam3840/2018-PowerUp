@@ -43,7 +43,7 @@ public class RunMotor1 extends Subsystem {
     
     public void RunMotorAtSetSpeed(XboxController driveXBoxController) {
     	double posThreshold = 0.1;  //default threshold value from xBox Controller
-    	double dblPositive = driveXBoxController.getRawAxis(3);       
+    	double dblPositive = (driveXBoxController.getRawAxis(1)) * -1;       
     
     	//display on dashboards
     	SmartDashboard.putNumber("Motor Speed: ", dblPositive);
