@@ -36,7 +36,6 @@ public class DriveRobot extends Command {
     @Override
     protected void end() {
     	Robot.driveTrain.StopMotion();
-    	
     }
 
     // Called when another command which requires one or more of the same

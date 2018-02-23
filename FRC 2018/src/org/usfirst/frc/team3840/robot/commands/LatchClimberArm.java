@@ -4,32 +4,33 @@ import org.usfirst.frc.team3840.robot.Robot;
 import edu.wpi.first.wpilibj.command.Command;
 
 /**
- * This runs the climber to climb
+ * 
  */
-public class Climb extends Command {
-
-    public Climb() {
+public class LatchClimberArm extends Command {
+		
+    public LatchClimberArm() {
         // Use requires() here to declare subsystem dependencies
-       requires(Robot.climber);
+        requires(Robot.unLatchClimber);
     }
 
     // Called just before this Command runs the first time
     protected void initialize() {
+    	setTimeout(0.6);
     }
 
     // Called repeatedly when this Command is scheduled to run
     protected void execute() {
-    	Robot.climber.climbScale(Robot.oi.driveJoyStick);
+    	Robot.unLatchClimber.UnlatchArm_CW();
     }
 
     // Make this return true when this Command no longer needs to run execute()
     protected boolean isFinished() {
-        return false;
+    	return isTimedOut();
     }
 
     // Called once after isFinished returns true
     protected void end() {
-    	Robot.climber.stopMotion();
+    	Robot.unLatchClimber.StopMotor();
     }
 
     // Called when another command which requires one or more of the same

@@ -35,8 +35,7 @@ public class LiftToSwitch extends Command {
     protected boolean isFinished() {
     	if(Robot.liftElevator.intSensorPosition > Robot.liftElevator.intLowwerRange || Robot.liftElevator.intSensorPosition >= Robot.liftElevator.intUpperRange || true) { 
     		return true;
-    	}
-    	
+    	}	
 		return false;
     }
 

@@ -4,13 +4,13 @@ import org.usfirst.frc.team3840.robot.Robot;
 import edu.wpi.first.wpilibj.command.Command;
 
 /**
- * This runs the climber to climb
+ *
  */
-public class Climb extends Command {
+public class ResetLiftEncoder extends Command {
 
-    public Climb() {
+    public ResetLiftEncoder() {
         // Use requires() here to declare subsystem dependencies
-       requires(Robot.climber);
+        requires(Robot.liftElevator);
     }
 
     // Called just before this Command runs the first time
@@ -19,7 +19,7 @@ public class Climb extends Command {
 
     // Called repeatedly when this Command is scheduled to run
     protected void execute() {
-    	Robot.climber.climbScale(Robot.oi.driveJoyStick);
+    	Robot.liftElevator.ResetEncoders();
     }
 
     // Make this return true when this Command no longer needs to run execute()
@@ -29,7 +29,6 @@ public class Climb extends Command {
 
     // Called once after isFinished returns true
     protected void end() {
-    	Robot.climber.stopMotion();
     }
 
     // Called when another command which requires one or more of the same

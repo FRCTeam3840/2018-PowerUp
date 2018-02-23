@@ -1,40 +1,40 @@
 package org.usfirst.frc.team3840.robot.commands;
 
 import org.usfirst.frc.team3840.robot.Robot;
+
 import edu.wpi.first.wpilibj.command.Command;
 
 /**
- * This runs the climber to climb
+ *
  */
-public class Climb extends Command {
+public class autoDummyDelay extends Command {
 
-    public Climb() {
+    public autoDummyDelay() {
         // Use requires() here to declare subsystem dependencies
-       requires(Robot.climber);
+        requires(Robot.driveTrain);
     }
 
     // Called just before this Command runs the first time
     protected void initialize() {
+    	setTimeout(1.0);
+    	Robot.driveTrain.zeroDistanceTraveled();
     }
 
     // Called repeatedly when this Command is scheduled to run
     protected void execute() {
-    	Robot.climber.climbScale(Robot.oi.driveJoyStick);
     }
 
     // Make this return true when this Command no longer needs to run execute()
     protected boolean isFinished() {
-        return false;
+    	return isTimedOut();
     }
 
     // Called once after isFinished returns true
     protected void end() {
-    	Robot.climber.stopMotion();
     }
 
     // Called when another command which requires one or more of the same
     // subsystems is scheduled to run
     protected void interrupted() {
-    	end();
     }
 }

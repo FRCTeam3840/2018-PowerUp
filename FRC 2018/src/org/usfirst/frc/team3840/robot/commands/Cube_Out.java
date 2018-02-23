@@ -12,7 +12,7 @@ public class Cube_Out extends Command {
     public Cube_Out() {
         // Use requires() here to declare subsystem dependencies
     	requires(Robot.intake); 
-            }
+    }
 
     // Called just before this Command runs the first time
     protected void initialize() {
