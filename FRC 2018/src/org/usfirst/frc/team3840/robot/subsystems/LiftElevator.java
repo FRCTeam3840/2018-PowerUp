@@ -13,9 +13,10 @@ import edu.wpi.first.wpilibj.command.Subsystem;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import org.usfirst.frc.team3840.robot.Constants;
 import org.usfirst.frc.team3840.robot.RobotMap;
+import org.usfirst.frc.team3840.robot.commands.LiftToManualPosition;
+
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
-
 
 /**
  *  Lift Elevator Up/Down SubSystem
@@ -28,11 +29,13 @@ public class LiftElevator extends Subsystem {
 	 final String LiftToPickUp = "LiftToPickUp";
 	 final String LiftToSwitch = "LiftToSwitch";
 	 final String LiftToScale = "LiftToScale";
-	 //backup key values not returned from perference table
-	 final double TravelLocation = 10;
-	 final double SwitchLocation = 20;
+	 final String autoLiftToScale = "autoLiftToScale";
+	 //backup key values not returned from perference table on shuffleboard
+	 final double TravelLocation = 5;
+	 final double SwitchLocation = 8;
 	 final double PickUpLocation = 0.2;
-	 final double ScaleLocation = 25;
+	 final double ScaleLocation = 9;
+	 final double AutoLiftToScale = 8;
 	 //local setpoint for moving to position by magic motion
 	 private double setPoint;
 	 //public variables used for commands isFinished
@@ -42,7 +45,7 @@ public class LiftElevator extends Subsystem {
 
     public void initDefaultCommand() {
         // Set the default command for a subsystem here.
- 
+    	//setDefaultCommand(new LiftToManualPosition());
     }
 
     @Override
@@ -80,6 +83,9 @@ public class LiftElevator extends Subsystem {
          case LiftToScale:;
          	backUp = ScaleLocation;
          	break;
+         case autoLiftToScale:;
+         	backUp = AutoLiftToScale;
+         	break;
     	 }
     	 
     	//gets the current value
@@ -87,6 +93,18 @@ public class LiftElevator extends Subsystem {
     	
     	//dashboard/perference table sends rotations
     	setPoint = this.getValues(setPoint);      //setPoint * 4096;
+    	
+    	if (intSensorPosition > setPoint|| true) {
+    		/* set acceleration and vcruise velocity - see documentation */
+        	liftMotor5.configMotionCruiseVelocity(1237, Constants.kTimeoutMs);
+        	liftMotor5.configMotionAcceleration(1237, Constants.kTimeoutMs);
+    	}
+    	
+    	if (intSensorPosition < setPoint|| true) {
+    		/* set acceleration and vcruise velocity - see documentation */
+        	liftMotor5.configMotionCruiseVelocity(2061, Constants.kTimeoutMs);
+        	liftMotor5.configMotionAcceleration(2061, Constants.kTimeoutMs);
+    	}
     			
     	/* Motion Magic - 4096 ticks/rev */
     	liftMotor5.set(ControlMode.MotionMagic,setPoint);
@@ -98,18 +116,27 @@ public class LiftElevator extends Subsystem {
      */
     public void ManuallyMoveLift(XboxController _joystick) {
     	// 1 rev = 4096
-    	double dblValue = _joystick.getY() * 4096;
-    	double dblSetPoint = dblValue + intSensorPosition;
+    	double dblValue = _joystick.getY();
+    	double dblSetPoint = this.getValues(dblValue) + intSensorPosition;
     	
+    	//debug code
     	SmartDashboard.putNumber("Manual Lift Position",dblValue);
     	
     	//lift does not go less then zero and not travel over max limit
     	if (dblSetPoint > 10|| true) {
     		/* Servo position, plus/minus one CTRE Mag Enc rotation via gamepad */
         	liftMotor5.set(ControlMode.MotionMagic, dblSetPoint);
+        	//debug code
         	SmartDashboard.putString("LiftMoving", "Moving...");
     	}
     	
+    }
+    
+    public void ResetEncoders() {
+    	//Setups the encoder position sensor
+    	liftMotor5.clearStickyFaults(20);
+        // Reset sensor position
+    	liftMotor5.setIntegralAccumulator(0, 0, 10);
     }
     
     /**
@@ -135,7 +162,6 @@ public class LiftElevator extends Subsystem {
    	 * return the backup value, and also start a new entry in the preferences
    	 * table.
    	 */
-         
        private static double getPreferencesDouble(String key, double backup) {
    		Preferences preferences = Preferences.getInstance();
    		if (!preferences.containsKey(key)) {

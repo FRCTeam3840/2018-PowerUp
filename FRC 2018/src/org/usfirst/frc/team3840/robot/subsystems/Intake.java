@@ -2,15 +2,13 @@ package org.usfirst.frc.team3840.robot.subsystems;
 
 import org.usfirst.frc.team3840.robot.RobotMap;
 
-import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.Preferences;
-import edu.wpi.first.wpilibj.Spark;
 import edu.wpi.first.wpilibj.SpeedController;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.command.Subsystem;
 
 /**
- *
+ * Handling the cube play.
  */
 public class Intake extends Subsystem {
 
@@ -22,9 +20,13 @@ public class Intake extends Subsystem {
 	//  SmartDashBoard , SuffleBoard 
 	final String IntakeSpeed ="IntakeSpeed";
 	final String OutTakeSpeed = "OutTakeSpeed";
+	final String HoldSpeed = "HoldSpeed";
 	
-	final double SpeedIn=1.0;
-	final double SpeedOut=-0.8;
+	final double SpeedIn = 1.0;
+	final double SpeedOut = -0.5;
+	final double SpeedHold = 0.2;
+			
+	
 	private  double setSpeed;
 	
 
@@ -36,50 +38,55 @@ public class Intake extends Subsystem {
     
     public void intakeCube() {
     	double backup = SpeedIn;
-    	setSpeed = getPreferencesDouble( IntakeSpeed ,backup); 
+    	setSpeed = getPreferencesDouble(IntakeSpeed ,backup); 
     	
     	intakeLeft.set(setSpeed);
-    	intakeRight.set(setSpeed);
-    
+    	intakeRight.set(setSpeed);    
     }
     
     public void ejectCube() {
     	double backup = SpeedOut;
-    	setSpeed = getPreferencesDouble( OutTakeSpeed ,backup);
+    	setSpeed = getPreferencesDouble(OutTakeSpeed ,backup);
     	
     	intakeLeft.set(setSpeed);
     	intakeRight.set(setSpeed);
-    	
-    
     }
     
-	/**Axis 2 eject cube
-	public void ejectCube(XboxController  actuatorController) { 
-	   double posThreshold = -0.15; //Default threshold value from XboxController
-		double dblSpeedSetPoint = actuatorController.getRawAxis(2)*-1;
-		
-		if(dblSpeedSetPoint  > posThreshold) {
-			intakeLeft.set(dblSpeedSetPoint);	
-			intakeRight.set(dblSpeedSetPoint);
-		}
-	
-		
-	
-	
-		
-	}
-	**/
-    private void getX() {
-		// TODO Auto-generated method stub
-		
-	}
+   public void holdCube() {
+	   double backup = SpeedHold;
+	   setSpeed = getPreferencesDouble(HoldSpeed ,backup);
+	   
+	   intakeLeft.set(-0.25);
+	   intakeRight.set(-0.25);
+   }
+   
+   public void autoEject() {
+	   intakeLeft.set(0.8);
+   	   intakeRight.set(0.8);
+   }
 
+   public void ejectCubeAxis(XboxController AcutatorController) {
+	   double posThreshold = 0.15; //Default threshold vaule from Xboxcontroller
+	   double dblSpeedSetPoint = AcutatorController.getRawAxis(3);
+	   
+	   //Positve rotation of climber
+	   if(Math.abs(dblSpeedSetPoint) > posThreshold|| true) { 
+   		intakeLeft.set(dblSpeedSetPoint);
+   		intakeRight.set(dblSpeedSetPoint);
+	   }
+	}
+   
+ 
 	public void stopMotion() {
     	intakeLeft.set(0.0);
     	intakeRight.set(0.0);
-    	
     }
-    //
+	
+	/**
+   	 * Retrieve numbers from the preferences table. If the specified key is in
+   	 * the preferences table, then the preference value is returned. Otherwise,
+   	 * return the backup value, and also start a new entry in the preferences
+   	 * table. */
     private static double getPreferencesDouble(String key, double backup) {
     	Preferences preferences = Preferences.getInstance();
     	if(!preferences.containsKey(key)) {
@@ -89,5 +96,6 @@ public class Intake extends Subsystem {
     		
     	}
   
-    }
+    
+ }
 

@@ -1,7 +1,7 @@
 package org.usfirst.frc.team3840.robot.subsystems;
 
 import org.usfirst.frc.team3840.robot.RobotMap;
-
+import org.usfirst.frc.team3840.robot.commands.Climb;
 import edu.wpi.first.wpilibj.Preferences;
 import edu.wpi.first.wpilibj.SpeedController;
 import edu.wpi.first.wpilibj.XboxController;
@@ -18,54 +18,48 @@ public class Climber extends Subsystem {
 	
 	// SmartDashBoard , suffleBoard
 	final String ClimberSpeed = "ClimberSpeed";
-	
-	final double speedUp= 0.8;
+	final double speedUp = 0.8;
 	private double setSpeed;
 
     public void initDefaultCommand() {
         // Set the default command for a subsystem here.
-        //setDefaultCommand(new MySpecialCommand());
-    	
-    	
+       setDefaultCommand(new Climb());
     }
     
     
     public void climbScale() {
     	double backup = speedUp;
     	setSpeed = getPreferencesDouble( ClimberSpeed ,backup); 
-    	
     	climber.set(setSpeed);
     }
     
-	/**Axis 3 climbScale
+	//Axis 3 climbScale
 	public void climbScale(XboxController  DriveController) { 
-	    double posThreshold = -0.15; //Default threshold value from XboxController
+	    double posThreshold = 0.15; //Default threshold value from XboxController
 		double dblSpeedSetPoint = DriveController.getRawAxis(3);
 		
-		if(dblSpeedSetPoint  > posThreshold) {
-			climber.set(dblSpeedSetPoint); }
-		}
+		//Positive rotation of climber
+    	if(Math.abs(dblSpeedSetPoint) > posThreshold|| true) { 
+    		climber.set(dblSpeedSetPoint);
+    	}
+	}
 		
+      
+    public void stopMotion() {
+    	climber.stopMotor();
+	}
     
 
-private void getX() {
-	// TODO Auto-generated method stub
-	
-}
- **/   
-public void stopMotion() {
-	climber.set(0.0);
-	
-}
-//
-private static double getPreferencesDouble(String key, double backup) {
-	Preferences preferences = Preferences.getInstance();
-	if(!preferences.containsKey(key)) {
-		preferences.putDouble(key, backup);
+    //
+    private static double getPreferencesDouble(String key, double backup) {
+    	Preferences preferences = Preferences.getInstance();
+    	if(!preferences.containsKey(key)) {
+    		preferences.putDouble(key, backup);
 	}
-	return preferences.getDouble(key, backup);
+		return preferences.getDouble(key, backup);
 	
     }    
+
 }
 
 
