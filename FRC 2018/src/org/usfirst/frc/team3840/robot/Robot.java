@@ -2,11 +2,17 @@
 package org.usfirst.frc.team3840.robot;
 
 import org.usfirst.frc.team3840.robot.commands.AutonomousCommand;
+import org.usfirst.frc.team3840.robot.commands.Climb;
+import org.usfirst.frc.team3840.robot.commands.EjectCubeAxis;
 import org.usfirst.frc.team3840.robot.subsystems.Climber;
+import org.usfirst.frc.team3840.robot.subsystems.ClimberLatch;
 import org.usfirst.frc.team3840.robot.subsystems.DriveTrain;
 import org.usfirst.frc.team3840.robot.subsystems.Intake;
 import org.usfirst.frc.team3840.robot.subsystems.LiftElevator;
 
+import edu.wpi.cscore.UsbCamera;
+import edu.wpi.first.wpilibj.CameraServer;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.command.Scheduler;
@@ -29,8 +35,13 @@ public class Robot extends TimedRobot {
     public static DriveTrain driveTrain;
     public static Intake intake;
     public static Climber climber;
+    public static Climb manualclimber;
+    public static ClimberLatch unLatchClimber;
     public static LiftElevator liftElevator;
-  
+    public static EjectCubeAxis cubeAxis;
+       
+    int autoSelectionChooser;
+    int autoSendSelection;
     
 	/**
 	 * This function is run when the robot is first started up and should be
@@ -43,11 +54,16 @@ public class Robot extends TimedRobot {
 		intake = new Intake();
 		driveTrain = new DriveTrain();
 		climber = new Climber();
-		
+		unLatchClimber = new ClimberLatch();
 		liftElevator = new LiftElevator();
+		manualclimber = new Climb();
+		cubeAxis = new EjectCubeAxis();
         SmartDashboard.putData(liftElevator);
-
-		
+               
+        //Setup Usb camera connection      
+        UsbCamera cam0 = CameraServer.getInstance().startAutomaticCapture(0);
+        cam0.setFPS(20);
+        
 	    // OI must be constructed after subsystems. If the OI creates Commands
         //(which it very likely will), subsystems are not guaranteed to be
         // constructed yet. Thus, their requires() statements may grab null
@@ -55,8 +71,10 @@ public class Robot extends TimedRobot {
         oi = new OI();
 		
         //Add commands to autonomous Sendable chooser
-        chooser.addDefault("Autonomous Command", new AutonomousCommand());
-        
+        // chooser.addDefault("Autonomous Command", new AutonomousCommand());
+        chooser.addDefault("Default Auto", new AutonomousCommand(0));
+		chooser.addObject("Left Position", new AutonomousCommand(1));
+		chooser.addObject("Right Position", new AutonomousCommand(2));
         SmartDashboard.putData("Auto Mode", chooser);
         
 	}
@@ -90,14 +108,38 @@ public class Robot extends TimedRobot {
 	@Override
 	public void autonomousInit() {
 		autonomousCommand = chooser.getSelected();
-
-		/*
-		 * String autoSelected = SmartDashboard.getString("Auto Selector",
-		 * "Default"); switch(autoSelected) { case "My Auto": autonomousCommand
-		 * = new MyAutoCommand(); break; case "Default Auto": default:
-		 * autonomousCommand = new ExampleCommand(); break; }
-		 */
-
+		
+		String autoSelected = SmartDashboard.getString("Auto Select", "Default"); 
+		  
+		 String gameData;
+		  gameData = DriverStation.getInstance().getGameSpecificMessage();
+		  
+		  if(gameData.charAt(0) == 'L')
+			{
+				//Put left auto code here
+			} else {
+				//Put right auto code here
+			}
+		  
+		  /**
+		  switch(autonomousCommand) {
+		  	case "Default Auto":
+		  		autoSelectionChooser = 1;
+		  		break;
+		  	case "Left Position": 
+		  		autoSelectionChooser = 2; 
+		  		break; 
+		  	case "Right Position": 
+		  		autoSelectionChooser = 3;
+		  		break;
+		  	default:  
+		  		//autoSelectionChooser = 0;
+		  } */
+		  
+		  autoSelectionChooser = 2;
+		 
+		 // Sets the auto mode we will run
+		  autonomousCommand = new AutonomousCommand(autoSelectionChooser);
 		// schedule the autonomous command (example)
 		if (autonomousCommand != null) {
 			autonomousCommand.start();
@@ -109,6 +151,9 @@ public class Robot extends TimedRobot {
 	 */
 	@Override
 	public void autonomousPeriodic() {
+		
+		// Sets the auto mode we will run
+		  autonomousCommand = new AutonomousCommand(autoSelectionChooser);
 		Scheduler.getInstance().run();
 	}
 
@@ -129,7 +174,6 @@ public class Robot extends TimedRobot {
 	@Override
 	public void teleopPeriodic() {
 		Scheduler.getInstance().run();
-		
 	}
 
 	/**
